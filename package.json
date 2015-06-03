@@ -1,16 +1,16 @@
 {
-    "name" : "Calendar",
+    "name" : "DatePicker",
     "version" : "0.0.1",
-    "description" : "calendar component create base react",
+    "description" : "datepicker component create base react",
     "keywords": [
-      "calendar,react,ReactJS,calendar-component"
+      "datepicker,calendar,react,ReactJS,datepicker-component"
     ],
-    "main" : "./Calendar.js",
+    "main" : "./DatePicker.js",
     "dependencies": {
       "react": ">0.12.0"
     },
     "repository": {
       "type": "git",
-      "url": "https://github.com/xuluxi/react-calendar.git"
+      "url": "https://github.com/xuluxi/react-datepicker.git"
     }
 }

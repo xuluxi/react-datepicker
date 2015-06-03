@@ -1,5 +1,5 @@
 /**
- * 日历组件
+ * 日历选择器组件
  */
 'use strict';
 var React = require('react');
