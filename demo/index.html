@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <style>
+  .demo-wrapper {
+    border-bottom: 2px dotted #ddd;
+  }
+  .demo {
+    width: 200px;
+    height: 100px;
+    display: inline-block;
+    position: relative;
+  }
+   p {
+    height: 100px;
+    border: 1px solid #ddd;
+    display: inline-block;
+  }
+ </style>
+ <meta charset="UTF-8"/>
+ <script src="bundle.js"></script>
+</head>
+<body>
+  <div class="demo-wrapper">
+   <div id="demo1" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() }/></br>
+   只设置date，其他使用默认
+   </p>
+  </div>
+
+  <div class="demo-wrapper">
+   <div id="demo2" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() } unavailableAfter={ new Date() } /></br>
+   某日期之后的日期不可用
+   </p>
+  </div>
+
+  <div class="demo-wrapper">
+   <div id="demo3" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() } unavailableBefore={ new Date() } /></br>
+   某日期之前的日期不可用
+   </p>
+  </div>
+  
+  <div class="demo-wrapper">
+   <div id="demo4" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() } changeSelectedDate={ changeDate } showToday={ true } /></br>
+   显示“今天”
+   </p>
+  </div>
+  
+  <div class="demo-wrapper">
+   <div id="demo5" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() } changeSelectedDate={ changeDate } showToday={ true } showHoliday={ true } /></br>
+   显示重要节日
+   </p>
+  </div>
+  
+  <div class="demo-wrapper">
+   <div id="demo6" class="demo"></div>
+   <p>
+   &lt; DatePicker date={ new Date() } disabled={ true }/></br>
+   不可用状态
+   </p>
+  </div>
+
+</body>
+</html>

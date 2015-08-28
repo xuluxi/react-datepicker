@@ -1,11 +1,23 @@
+#datepicker-wrapper .input-normal {
+    border:1px solid #999;
+    padding:6px;
+    display:inline-block;
+}
+#datepicker-wrapper .input-active {
+    border-color:#57c5f7;
+}
+#datepicker-wrapper .input-disabled {
+    background-color:#ddd;
+    cursor:not-allowed;
+}
 #react-calendar {
     position:absolute;
-    left:7px;
-    top:44px;
+    top:31px;
     z-index:15;
     width:230px;
     background-color:#fff;
     box-shadow:2px 2px 3px #ddd;
+    outline:none;
 }
 #react-calendar table {
     border-spacing:0;
@@ -50,10 +62,11 @@
 }
 #react-calendar .date-unavailable {
     color:#ddd !important;
-    cursor:not-allowed;
 }
-#react-calendar .date-unavailable:hover {
+#react-calendar .date-unavailable span:hover {
     background-color:#fff;
+    cursor:not-allowed;
+    color:#ddd;
 }
 #react-calendar .calendar-month-title {
     height:45px;
