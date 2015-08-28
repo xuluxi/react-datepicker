@@ -1,6 +1,7 @@
 /**
  * 日历选择器组件
  */
+require('./calendar-style.css');
 'use strict';
 var React = require('react');
 
@@ -201,7 +202,7 @@ var Calendar = {
 	 */
 	init : function (state, props) {
         this.calendarData = this.getSolarMonthData(state, props);
-        var html = this.rendarMonth(this.calendarData, state.unavailableBefore, props);
+        var html = this.rendarMonth(this.calendarData, state.unavailableBefore, state.unavailableAfter, props);
         return html;
 	},
 
@@ -278,7 +279,7 @@ var Calendar = {
 	  */
 	getSolarMonthData : function (state, props) {
 		var dataList = [],
-			hasHoliday = props.config.hasHoliday,
+			showHoliday = props.config.showHoliday,
             // 今天的年、月、日
 			tDateObj = new Date(),
 			tYear = tDateObj.getFullYear(),
@@ -304,7 +305,7 @@ var Calendar = {
 		var firstDay = firstDate.getDay();
 		var lunarData = null, tData = null, lHoliday, sHoliday, holiday;
 		for (var d = 1; d <= monthTotalDay; d++) {
-			if (hasHoliday) {
+			if (showHoliday) {
 				lunarData = Calendar.solar2lunar(year, month, d);
 				lHoliday = lunarData.isLeap ? undefined : this.lunarHoliday[lunarData.lMonth + '-' + lunarData.lDay];
                 sHoliday = this.getSolarHoliday(year, month, d);
@@ -315,7 +316,8 @@ var Calendar = {
 				'month' : month,
 				'date' : d,
 				'week' : (firstDay + d - 1) % 7,
-				'holiday' : holiday
+				'holiday' : holiday,
+                'lunarData' : lunarData
 			};
 			// 今天特殊标记
 			if (d === tDate && month === tMonth && year === tYear) {
@@ -335,16 +337,14 @@ var Calendar = {
 	  * 绘制一个月的数据
       * @param monthData 要绘制月份的数据
 	  */
-	rendarMonth : function (monthData, unavailableBefore, props) {
+	rendarMonth : function (monthData, unavailableBefore, unavailableAfter, props) {
 		var tbodyHTML,
 			week,
 			data,
 			date,
 			value,
-			lunarDate,
 			contentHTML = '<tr>',
 			cTD = '',
-			lunar = '',
             blankTD = '<td class="calendar-passed">&nbsp;</td>',
             fillWeek = [blankTD,blankTD,blankTD,blankTD,blankTD,blankTD];
 
@@ -389,25 +389,34 @@ var Calendar = {
                 specialClass += ' date-start';
             }
 			// 显示节日,节日的优先级大于'今天'
-			if (props.config.hasHoliday && data.holiday) {
+			if (props.config.showHoliday && data.holiday) {
                 date = data.holiday;
                 specialClass += ' calendar-special';
             }
             if (week === 6 || week === 0) {
                 specialClass += ' week' + week;
             }
-            if (unavailableBefore.date) {
+            if (unavailableBefore) {
                 var calendarDateObj = new Date(data.year, data.month-1, data.date);
-                var compare = Calendar.compareTwoDate(calendarDateObj, unavailableBefore.date);
+                var compare = Calendar.compareTwoDate(calendarDateObj, unavailableBefore);
                 if (compare > 0) {
                     specialClass += ' date-unavailable';
                 };
             };
+
+            if (unavailableAfter) {
+                var calendarDateObj = new Date(data.year, data.month-1, data.date);
+                var compare = Calendar.compareTwoDate(calendarDateObj, unavailableAfter);
+                if (compare < 0) {
+                    specialClass += ' date-unavailable';
+                };
+            };
+            
             // 各位的月份&日期加上‘0’
             var monthStr = data.month < 10 ? '0' + data.month : data.month;
             var dateStr = data.date < 10 ? '0' + data.date : data.date;
 			cTD += '<td data-value="'+ data.year + '-' + monthStr + '-' + dateStr +'" data-week="' + week + '" data-info="' + dataInfo + '" class="' + addClass + specialClass + '">'+
-                   '<span class="calendar-date-item">'+ date + lunar +'</span></td>';
+                   '<span class="calendar-date-item">'+ date +'</span></td>';
 			if (week === 0 && i !== monthData.length) {
 				contentHTML += cTD + '</tr><tr>';
 				cTD = '';
@@ -424,13 +433,14 @@ var Calendar = {
 	}
 };
 
-module.exports =  React.createClass({
+module.exports = React.createClass({
     propTypes : {
         show : React.PropTypes.bool.isRequired,
         changeSelectedDate : React.PropTypes.func.isRequired,
         config : React.PropTypes.object.isRequired,
         // 日历不可用日期，在此日期之前不可用
-        unavailableBefore : React.PropTypes.object.isRequired
+        unavailableBefore : React.PropTypes.object,
+        hideCalendar : React.PropTypes.func
     },
     getInitialState : function() {
         var config = this.props.config;
@@ -443,6 +453,7 @@ module.exports =  React.createClass({
             showedYear : config.year,
             showedMonth : config.month,
             unavailableBefore : this.props.unavailableBefore,
+            unavailableAfter : this.props.unavailableAfter,
             // calendar 的显示&隐藏
             show : this.props.show
         };
@@ -452,7 +463,6 @@ module.exports =  React.createClass({
         return html;
     },
     handlePrev : function(e) {
-        e.stopPropagation();
         var date = new Date(this.state.showedYear, this.state.showedMonth-2, 1);
         this.setState({
             showedYear : date.getFullYear(),
@@ -460,7 +470,6 @@ module.exports =  React.createClass({
         });
     },
     handleNext : function(e) {
-        e.stopPropagation();
         var date = new Date(this.state.showedYear, this.state.showedMonth, 1);
         this.setState({
             showedYear : date.getFullYear(),
@@ -469,7 +478,6 @@ module.exports =  React.createClass({
     },
     // 日历中某个日期被选中
     handleSelectDate : function(e) {
-        e.stopPropagation();
         var target = e.target;
         var dateStr = '';
         if (target.tagName === 'SPAN') {
@@ -495,14 +503,24 @@ module.exports =  React.createClass({
             date : parseInt(dateArr[2])
         });
     },
+    focusCalendar : function() {
+        var that = this;
+        // 如果calendar处于隐藏状态无法设置focus，所以设置延时等待Calendar绘制到页面
+        setTimeout(function(){
+            that.getDOMNode().focus();
+        },100);
+    },
     componentWillReceiveProps : function(nextProp) {
         this.setState({
             show : nextProp.show
         });
+        if (!this.state.show && nextProp.show) {
+            this.focusCalendar();
+        };
         var thisConfig = this.props.config;
         var nextConfig = nextProp.config;
-        var thisUnavaDate = this.props.unavailableBefore.date;
-        var nextUnavaDate = nextProp.unavailableBefore.date;
+        var thisUnavaDate = this.props.unavailableBefore;
+        var nextUnavaDate = nextProp.unavailableBefore;
         var unavailableChange = false;
         if (thisUnavaDate !== nextUnavaDate) {
             if (typeof thisUnavaDate !== typeof nextUnavaDate) {
@@ -522,7 +540,8 @@ module.exports =  React.createClass({
                 date : nextConfig.date,
                 showedYear : nextConfig.year,
                 showedMonth : nextConfig.month,
-                unavailableBefore : nextProp.unavailableBefore
+                unavailableBefore : nextProp.unavailableBefore,
+                unavailableAfter : nextProp.unavailableAfter
             });
         };
     },
@@ -535,7 +554,7 @@ module.exports =  React.createClass({
         var style = {
             display : this.state.show ? 'block' : 'none'
         };
-        return (<div className="pms-calendar" id="react-calendar" style={ style }>
+        return (<div className="pms-calendar" id="react-calendar" style={ style } tabIndex={ 0 } onBlur={ this.props.hideCalendar } >
                  <div className="calendar-wrapper">
                    <div className="calendar-month">
                      <div className="calendar-month-title">{ calendarTitle }</div>

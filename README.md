@@ -3,7 +3,6 @@ react-datepicker
 Datepicker component for react
 
 ## Usage 
-```jsx
 var React = require('react');
 var DatePicker = require('react-datepicker');
 
@@ -28,4 +27,3 @@ var StartCalendar = React.createElement(DatePicker, {
 });
 React.render(StartDatePicker, document.body);
 
-```jsx
