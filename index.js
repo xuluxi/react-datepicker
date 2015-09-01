@@ -585,7 +585,7 @@ var DatePicker = React.createClass({displayName: "DatePicker",
                 showLunarDate : this.props.showLunarDate
             },
             unavailableBefore : this.props.unavailableBefore,
-            selectedDate : year + '-' + (month < 10 ? '0'+month : month) + '-' + date
+            selectedDate : year + '-' + (month < 10 ? '0'+month : month) + '-' + (date < 10 ? '0'+date : date)
         }
     },
 
