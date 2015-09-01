@@ -1,6 +1,7 @@
 react-datepicker
 ================
 Datepicker component for react
+demo: http://xuluxi.github.io/react-datepicker/
 
 ## Usage 
 npm: npm install react-datepicker-cn
